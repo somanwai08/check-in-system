@@ -1,0 +1,75 @@
+.home-header{
+    font-size: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    // color:white;
+    .home-header-logo {
+        .icon-vue,
+        .icon-icon-test,
+        .icon-typescript {
+          margin-right: 5px;
+          font-size: inherit;
+        }
+        .icon-vue {
+          color: green;
+        }
+        .icon-icon-test {
+          color: #deb887;
+        }
+        .icon-typescript {
+          color: blue;
+        }
+      }
+      .home-header-title {
+        margin-left: 30px;
+        font-weight: 700;
+        font-size: 18px;
+        margin-right: auto;
+      }
+      .home-header-space{
+        margin-left: 20px;
+      }
+
+  }
+
+
+  .home-main {
+    margin-top: 20px;
+    background: #fff;
+    flex-grow: 1;
+    position: relative;
+}
+
+.container{
+   overflow-x: hidden;
+  
+}
+
+.header{
+  padding: 0 20px;
+  background-color: #D1A543;
+}
+
+
+.home-aside{
+   height: calc(100vh - 64px);
+   border:none;
+   padding-top:30px;
+   width: 30vw;
+}
+
+.home-breadcum{
+  background: #fff;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding-left: 30px;
+}
+
+@media screen and (max-width:576px){
+  .home-aside{
+    width: 25vw;
+  }
+}

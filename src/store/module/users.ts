@@ -3,7 +3,7 @@ import { createSlice,PayloadAction ,createAsyncThunk} from "@reduxjs/toolkit";
 
 
 type Token = string
-type Info = {
+export type Info = {
     [index:string]:unknown
 }
 
@@ -17,11 +17,13 @@ type logIn = {
     pass:string
 }
 
+// 進行用戶登錄的函數
 export const loginAction = createAsyncThunk('users/loginAction',async(payload:logIn)=>{
          const ret = await http.post('/users/login',payload)
          return ret
 })
 
+// 獲取用戶信息的函數？
 export const infosAction = createAsyncThunk('users/infosAction',async()=>{
     const ret = await http.get('/users/infos')
     return ret

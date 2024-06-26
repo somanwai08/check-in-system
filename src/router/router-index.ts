@@ -1,5 +1,5 @@
 import React from 'react'
-import { RouteObject, createBrowserRouter } from "react-router-dom";
+import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 import {lazy} from 'react'
 import {
     CopyOutlined,
@@ -18,21 +18,23 @@ const Check = lazy (()=>import('../views/Check/Check'))
 const Login = lazy (()=>import('../views/Login/Login'))
 
 declare module 'react-router'{
-    interface NonIndexRouteObject{
+   export interface NonIndexRouteObject{
         meta?:{
             menu:boolean,
             title:string,
             icon:React.ReactElement,
             auth:boolean
-        }
+        },
+        name?:string
     }
-    interface IndexRouteObject{
+  export  interface IndexRouteObject{
         meta?:{
             menu:boolean,
             title:string,
             icon:React.ReactElement,
             auth:boolean
-        }
+        },
+        name?:string
     }
 }
 
@@ -41,6 +43,11 @@ declare module 'react-router'{
 export const routes:RouteObject[]=[
     {
         path:'/',
+        element:React.createElement(Navigate,{to:'/sign'})
+    },
+    {
+        path:'/',
+        name:'home',
         element:React.createElement(BeforeEach,null,React.createElement(Home)),
         meta:{
             menu:true,
@@ -51,6 +58,7 @@ export const routes:RouteObject[]=[
         children:[
             {
                 path:'sign',
+                name:'sign',
                 element:React.createElement(Sign),
                 meta:{
                     menu:true,
@@ -61,6 +69,7 @@ export const routes:RouteObject[]=[
             },
             {
                 path:'exception',
+                name:'exception',
                 element:React.createElement(Exception),
                 meta:{
                     menu:true,
@@ -71,6 +80,7 @@ export const routes:RouteObject[]=[
             },
             {
                 path:'apply',
+                name:'apply',
                 element:React.createElement(Apply),
                 meta:{
                     menu:true,
@@ -81,6 +91,7 @@ export const routes:RouteObject[]=[
             },
             {
                 path:'check',
+                name:'check',
                 element:React.createElement(Check),
                 meta:{
                     menu:true,
@@ -88,7 +99,8 @@ export const routes:RouteObject[]=[
                     icon:React.createElement(ScheduleOutlined),
                     auth:true
                 },
-            }
+            },
+          
         ]
     },
     {

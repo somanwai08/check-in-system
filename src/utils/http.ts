@@ -1,15 +1,21 @@
 import axios from 'axios'
 import type {AxiosRequestConfig,AxiosResponse} from 'axios'
+import { store } from '../store/store-index';
+import { message } from 'antd';
+import { clearToken } from '../store/module/users';
 
 const instance = axios.create({
-    // baseURL:'http://localhost:3000',
-    baseURL:'http://api.h5ke.top/',
+    baseURL:'http://localhost:3000',
+    // baseURL:'http://api.h5ke.top/',
     timeout:5000
 })
 
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {
     // Do something before request is sent
+    if(config.headers){
+      config.headers.authorization = store.getState().user.token
+    }
     return config;
   }, function (error) {
     // Do something with request error
@@ -20,6 +26,13 @@ instance.interceptors.request.use(function (config) {
 instance.interceptors.response.use(function (response) {
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
+    if(response.data.errmsg === 'token error'){
+      message.error('token error')
+      store.dispatch(clearToken())
+      setTimeout(()=>{
+        window.location.replace('/login')
+      },1000)
+    }
     return response;
   }, function (error) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
