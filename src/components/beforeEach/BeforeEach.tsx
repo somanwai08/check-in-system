@@ -4,7 +4,7 @@ import { routes } from '../../router/router-index'
 import { useAppDispatch } from '../../store/store-index'
 import { useSelector } from 'react-redux'
 import type { RootState } from '../../store/store-index'
-import { infosAction ,clearToken, updateInfo} from '../../store/module/users'
+import { infosAction ,updateInfo} from '../../store/module/users'
 import _ from 'lodash'
 import type { Info } from '../../store/module/users'
 
@@ -41,13 +41,14 @@ export default function BeforeEach(props:BeforeEachProps) {
             }else{
                 // 如果沒有token，就返回登入頁面
                 return <Navigate to='/login'/>
+                // dispatch(updateInfo(infos as Info ))
 
             }   
         }
 
     }
     if (token && location.pathname === '/login'){
-        return <Navigate to='/'/>
+        return <Navigate to='/sign'/>
     }
     
     // 當頁面不需要權限進入的時候，直接返回children的內容

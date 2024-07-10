@@ -8,6 +8,8 @@ import type { RootState } from '../../../store/store-index';
 import { routes } from '../../../router/router-index';
 import _ from 'lodash';
 import { useLocation, matchRoutes,Link } from 'react-router-dom';
+import { current } from '@reduxjs/toolkit';
+import { type } from 'os';
 type MenuItem = Required<MenuProps>['items'][number];
 
 export default function HomeAside() {
@@ -16,15 +18,19 @@ export default function HomeAside() {
           const defaultSelectedKeys=matchResult![1].pathnameBase
           const defaultOpenKeys=matchResult![0].pathnameBase
 
+         
+
+
 
 
   const permission = useSelector((state:RootState)=>state.user.infos.permission) as unknown[]
+
 
   const menus = _.cloneDeep(routes).filter(v=>{
 
     // 對於menu裡面的每一項v，它的children屬性需要按照permission來過濾
     // 加入沒有該權限，要從路由表中刪除對應的children子項目
-    v.children = v.children?.filter(v=>v.meta?.menu && permission.includes(v.name))
+    v.children = v.children?.filter(v1=>v1.meta?.menu && permission.includes(v1.name))
     
             // 決定是否保留v的條件：1.menu屬性是否為真，v的name屬性是否在權限範圍裡面
          return (v.meta?.menu && permission.includes(v.name)) 
@@ -57,8 +63,8 @@ export default function HomeAside() {
   return (
     <div>
       <Menu
-      defaultSelectedKeys={[defaultSelectedKeys]}
-      defaultOpenKeys={[defaultOpenKeys]}
+      selectedKeys={[defaultSelectedKeys]}
+      openKeys={[defaultOpenKeys]}
       mode="inline"
       items={items}
       className={styles['home-aside']}
@@ -67,3 +73,6 @@ export default function HomeAside() {
     </div>
   )
 }
+
+
+

@@ -28,13 +28,15 @@ export default function Login() {
     console.log('Success:', values);
      dispatch(loginAction(values)).then(action=>{
 
-            const {errcode,token} = (action.payload as {[index:string]:unknown}).data as {[index:string]:unknown}
-             if (errcode === 0 && typeof token === 'string'){
+            const {errcode,token,errmsg} = (action.payload as {[index:string]:unknown}).data as {[index:string]:unknown}
+            
+            if (errcode === 0 && typeof token === 'string'){
               dispatch(updateToken(token))
               message.success('登錄成功')
               navigate('/')
              }
              else{
+              console.log(errcode,'errcode')
               message.error('登錄失敗')
              }
              

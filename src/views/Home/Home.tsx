@@ -10,10 +10,7 @@ import HomeMain from './components/HomeMain'
 const {Header,Content,Sider}=Layout
 
 export default function Home() {
-
-  
-  
-                
+                  
   return (
     <Layout className={styles['container']}>
       <Header className={styles['header']}>

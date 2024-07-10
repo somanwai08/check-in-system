@@ -8,7 +8,6 @@ export default function HomeBreadcrum() {
 
       const location = useLocation()
       const match = matchRoutes(routes,location)
-      console.log(match,'match')
 
      const title1 = match![0].route.meta?.title
      const title2 = match![1].route.meta?.title
