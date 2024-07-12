@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
@@ -18,19 +18,16 @@ export default function HomeAside() {
           const defaultSelectedKeys=matchResult![1].pathnameBase
           const defaultOpenKeys=matchResult![0].pathnameBase
 
+          const permission = useSelector((state:RootState)=>state.user.infos.permission) as unknown[]
          
-
-
-
-
-  const permission = useSelector((state:RootState)=>state.user.infos.permission) as unknown[]
-
+  console.log(permission,'permission')
 
   const menus = _.cloneDeep(routes).filter(v=>{
 
     // 對於menu裡面的每一項v，它的children屬性需要按照permission來過濾
     // 加入沒有該權限，要從路由表中刪除對應的children子項目
-    v.children = v.children?.filter(v1=>v1.meta?.menu && permission.includes(v1.name))
+    
+    v.children =_.cloneDeep(v.children)?.filter(v1=>v1.meta?.menu && permission.includes(v1.name))
     
             // 決定是否保留v的條件：1.menu屬性是否為真，v的name屬性是否在權限範圍裡面
          return (v.meta?.menu && permission.includes(v.name)) 

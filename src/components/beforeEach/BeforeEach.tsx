@@ -25,14 +25,15 @@ export default function BeforeEach(props:BeforeEachProps) {
 
            // 頁面需要權限進入,而用戶信息又為空的時候
         if(auth && _.isEmpty(infos)){
-
                     
             if(token){
+                
                      // 如果有token，獲取用戶信息
             dispatch(infosAction()).then(action=>{
                 const {errcode,infos}=(action.payload as {[index:string]:unknown}).data as {[index:string]:unknown}
                   
                 if(errcode === 0){
+                    
                     dispatch(updateInfo(infos as Info ))
                 }
                 // 其實這裡應該再寫一些如果token驗證失敗的處理方式
@@ -45,6 +46,8 @@ export default function BeforeEach(props:BeforeEachProps) {
 
             }   
         }
+      
+
 
     }
     if (token && location.pathname === '/login'){

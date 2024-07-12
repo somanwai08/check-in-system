@@ -24,7 +24,7 @@ type applyInfo = {
 // 更新用戶信息的數據類型
 type putApply =     {
    _id:string,
-   state:'已通過'|'未通過'
+   state:'已通过'|'未通过'
 }
 
 // 獲取用戶審批信息

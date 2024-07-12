@@ -3,6 +3,7 @@ import { useDispatch} from 'react-redux'
 import userReducer from './module/users'
 import signsReducer from './module/sign'
 import applyReducer from './module/apply'
+import newsReducer, { newsState } from './module/news'
 import type { userInfo } from "./module/users";
 import type {SignsState} from './module/sign'
 import type { ApplysState } from "./module/apply";
@@ -31,7 +32,8 @@ export const store = configureStore({
        reducer:{
         user:persistReducer(persistConfig,userReducer) as Reducer<userInfo & PersistPartial, UnknownAction>,
         sign:persistReducer(persistConfig,signsReducer) as Reducer<SignsState & PersistPartial,UnknownAction>,
-        apply:persistReducer(persistConfig,applyReducer) as Reducer<ApplysState&PersistPartial,UnknownAction>
+        apply:persistReducer(persistConfig,applyReducer) as Reducer<ApplysState&PersistPartial,UnknownAction>,
+        news:persistReducer(persistConfig,newsReducer) as Reducer<newsState&PersistPartial,UnknownAction>
        },
        middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

@@ -1,13 +1,15 @@
 import React,{ useEffect, useState }  from 'react'
 import styles from './Apply.module.scss'
 import { Button,Space,Input,Row,Radio,Table,Modal,Form,Select,DatePicker, message } from 'antd'
-import type { RadioChangeEvent,TableProps,FormProps,DatePickerProps  } from 'antd'
+import type { RadioChangeEvent,TableProps,FormProps } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import {Info, addApplyAction, getApplyAction, updateApplyInfo} from '../../store/module/apply'
 import _ from 'lodash'
 import { useSelector } from 'react-redux'
 import { RootState, useAppDispatch } from '../../store/store-index'
 import dayjs from 'dayjs'
+
+
 
 type FieldType = {
   approvername:string
@@ -73,9 +75,11 @@ export default function Apply() {
           const [isModalOpen, setIsModalOpen] = useState(false);
 
               useEffect(()=>{
+
+                // 進入的時候,沒有用戶審批信息就獲取用戶審批信息
                   if(_.isEmpty(applyInfos)){
                       dispatch(getApplyAction({applicantid:userInfos._id as string})).then(res=>{
-                        console.log(res.payload,'res')
+                        
                         const {errcode,rets } = (res.payload as {[index:string]:unknown}).data as {[index:string]:unknown}
                           if(errcode===0){
                             dispatch(updateApplyInfo(rets as Info))
@@ -120,11 +124,14 @@ export default function Apply() {
           };
 
           const onFinish:FormProps<FieldType>['onFinish']  = (values) => {
+
             console.log('Success:', values);
-            // values.time[0]=dayjs(values.time[0]).format('YYYY-MM-DD hh:mm:ss')
-            // values.time[1]=dayjs(values.time[1]).format('YYYY-MM-DD hh:mm:ss')
+            const time1=dayjs(values.time[0]).format('hh:mm:ss DD-MM-YYYY')
+            const time2 = dayjs(values.time[1]).format('hh:mm:ss DD-MM-YYYY')
+
             const data = {
               ...values,
+              time:[time1,time2],
               applicantid:userInfos._id,
               approverid:(userInfos.approver as {[index:string]:unknown}[])[0]._id,
               applicantname:userInfos.name
@@ -139,6 +146,9 @@ export default function Apply() {
                   const {errcode,rets } = (res.payload as {[index:string]:unknown}).data as {[index:string]:unknown}
                   console.log(rets,'erts')
                           if(errcode===0){
+                            message.success('success')
+                            onReset()
+                            handleCancel()
                             dispatch(updateApplyInfo(rets as Info))
                           }
                              

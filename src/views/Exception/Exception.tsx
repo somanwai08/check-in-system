@@ -7,6 +7,7 @@ import { Link,useSearchParams } from 'react-router-dom'
 import { Info, getTimeAction, updateInfo } from '../../store/module/sign'
 import _ from 'lodash'
 import { toZero } from '../../utils/common'
+import { getApplyAction, updateApplyInfo, Info as Info1 } from '../../store/module/apply'
 
 
 
@@ -43,6 +44,7 @@ export default function Exception() {
           const dispatch=useAppDispatch()
           const userInfo = useSelector((state:RootState)=>state.user.infos)
           const signInfo = useSelector((state:RootState)=>state.sign.infos)
+          const applyInfo = useSelector((state:RootState)=>state.apply.infos)
           
          
           useEffect(()=>{
@@ -61,6 +63,22 @@ export default function Exception() {
         }
           
           })
+
+          useEffect(()=>{
+            if(_.isEmpty(applyInfo)){
+              dispatch(getApplyAction({applicantid:userInfo._id as string})).then(action=>{
+                       const {errcode,rets}=(action.payload as {[index:string]:unknown}).data as {[index:string]:unknown}
+                       if(errcode===0){
+                        dispatch(updateApplyInfo(rets as Info1))
+                       }
+
+
+              })
+            }
+          })
+
+
+
 
           let monthDetail
           if(signInfo.detail){
@@ -96,42 +114,48 @@ export default function Exception() {
       </Row>
       <Row gutter={20} className={styles['exception-line']}>
         <Col span={12}>
-        <Timeline>
-
-          {monthDetail?.filter(item=>item[1]!=='').map(item=>{
+        <Timeline
+          items={monthDetail?.filter(item=>item[1]!=='').map(item=>{
             const timeInfo = (((signInfo.time as{[index:string]:unknown})[String(year)] as {[index:string]:unknown})[String(toZero(month+1))] as {[index:string]:unknown})[item[0]] as string[]
-            
-            return <Timeline.Item key={item[0]} className={styles['exception-lineItem']}>
-            <h3>{item[0]}-{(month+1)}-{year}</h3>
-            <Card >
-            <Space>
-            <h4>{item[1] as string}</h4>
-            <p>考勤詳情：{timeInfo[0]!=null?`${timeInfo[0]}-${timeInfo[1]!=null?timeInfo[1]:''}`:'no record'}</p>
-            </Space>
-            </Card>       
-          </Timeline.Item>
+            return {
+              children:<>
+              <h3>{item[0]}-{(month+1)}-{year}</h3>
+             <Card >
+             <Space>
+             <h4>{item[1] as string}</h4>
+             <p>考勤詳情：{timeInfo[0]!=null?`${timeInfo[0]}-${timeInfo[1]!=null?timeInfo[1]:''}`:'no record'}</p>
+             </Space>
+             </Card> </>
+            } 
           })}
+        >
          
         </Timeline>
         </Col>
         <Col span={12}>
-        <Timeline>
-        <Timeline.Item className={styles['exception-lineItem']}>
-            <h3>事假</h3>
-            <Card >
-            <h4>待審批</h4>
-            <p>申請日期： 09:08:09 04-07-2024 - 09:08:09 05-07-2024</p>
-            <p>申請詳情：aaa</p>
-            </Card>       
-          </Timeline.Item>
-          <Timeline.Item className={styles['exception-lineItem']}>
-            <h3>事假</h3>
-            <Card >
-            <h4>待審批</h4>
-            <p>申請日期： 09:08:09 04-07-2024 - 09:08:09 05-07-2024</p>
-            <p>申請詳情：aaa</p>
-            </Card>       
-          </Timeline.Item>
+        <Timeline
+           items={applyInfo.filter(item=>{
+            // 申請時段的開始月份
+            const startMonth = (item.time as string)[0].split('-')[1]
+            // 申請時段的結束月份
+            const endMonth = (item.time as string)[1].split('-')[1]
+            // 篩選條件：只有當申請開始月份小於等於當前月份，申請結束月份大於等於當前月份的item會被選出來
+            return startMonth<=toZero(month+1)&&endMonth>=toZero(month+1)
+           }).map(item=>{
+            const {reason,state,note}=item as {[index:string]:string}
+            
+            return {
+              children: <>
+               <h3>{reason}</h3>
+               <Card >
+            <h4>{state}</h4>
+            <p className={styles['exception-applCard']}>申請日期： {(item.time as string)[0]} - {(item.time as string)[1]}</p>
+            <p>申請詳情：{note}</p>
+            </Card> 
+              </>
+            }
+           })}
+        >
         </Timeline>
         </Col>
       </Row>

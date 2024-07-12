@@ -55,7 +55,6 @@ export default function Sign() {
        useEffect(()=>{
 
         if(_.isEmpty(signsInfos)){
-          console.log('run sign')
                 // 如果沒有簽名數據，就獲取用戶簽名數據
                 dispatch(getTimeAction({userid:usersInfos._id as string})).then((action1)=>{
                  
@@ -65,6 +64,7 @@ export default function Sign() {
                     }
                 })
         }
+      
 
        },[signsInfos,dispatch,usersInfos])
 
