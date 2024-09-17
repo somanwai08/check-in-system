@@ -44,7 +44,7 @@ export default function Exception() {
           const dispatch=useAppDispatch()
           const userInfo = useSelector((state:RootState)=>state.user.infos)
           const signInfo = useSelector((state:RootState)=>state.sign.infos)
-          const applyInfo = useSelector((state:RootState)=>state.apply.infos)
+          const applyInfo = useSelector((state:RootState)=>state.apply.applyList)
           
          
           useEffect(()=>{
@@ -57,25 +57,26 @@ export default function Exception() {
                   if(errcode===0){
                     dispatch(updateInfo(infos as Info))
                   }
-                
-                
           })
         }
           
-          })
+          },[signInfo, userInfo, dispatch])
 
           useEffect(()=>{
+            // 進入的時候,被管理者的假期申請記錄為空，就發請求獲取申請記錄
             if(_.isEmpty(applyInfo)){
+              console.log('zhixingma1')
               dispatch(getApplyAction({applicantid:userInfo._id as string})).then(action=>{
-                       const {errcode,rets}=(action.payload as {[index:string]:unknown}).data as {[index:string]:unknown}
+                       console.log(applyInfo,'applyInfo')
+                const {errcode,rets}=(action.payload as {[index:string]:unknown}).data as {[index:string]:unknown}
                        if(errcode===0){
-                        dispatch(updateApplyInfo(rets as Info1))
+                        if((rets as {[index:string]:unknown}[]).length!==0){
+                          dispatch(updateApplyInfo(rets as Info1))
+                        }
                        }
-
-
               })
             }
-          })
+          },[applyInfo, userInfo, dispatch])
 
 
 
@@ -94,12 +95,11 @@ export default function Exception() {
     <div>
       <Row className={styles.exception} justify="space-between" align="middle">
         {/* 左面按鈕 */}
-        <Link to='/apply'>
+        <Link to='/modify'>
         <Button type="primary">異常處理</Button>
         </Link>
         {/* 右面選擇菜單 */}
         <Space>
-          {/* <Button>2024</Button> */}
           <Select value={year} onChange={handleYearChange} className={styles.yearSelect}>
           {yearOption.map((item,i)=><Select.Option key={i} value={i} className="year-item">
                 {item}

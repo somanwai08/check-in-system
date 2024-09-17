@@ -14,8 +14,19 @@ export type userInfo = {
 
 type logIn = {
     email:string,
+    pass:string,
+    name?:string
+}
+type ChangPw = {
+    userid:string,
     pass:string
 }
+
+// 進行用戶註冊的函數
+export const registerAction = createAsyncThunk('users/registerAction',async(payload:logIn)=>{
+    const ret = await http.post('/users/register',payload)
+    return ret
+})
 
 // 進行用戶登錄的函數
 export const loginAction = createAsyncThunk('users/loginAction',async(payload:logIn)=>{
@@ -26,6 +37,18 @@ export const loginAction = createAsyncThunk('users/loginAction',async(payload:lo
 // 獲取用戶信息的函數？
 export const infosAction = createAsyncThunk('users/infosAction',async()=>{
     const ret = await http.get('/users/infos')
+    return ret
+})
+
+// admin獲取在職同事名單（用於修改同事打卡時間）
+export const employedListAction = createAsyncThunk('users/employedListAction',async()=>{
+    const ret = await http.get('/users/stafflist')
+    return ret
+})
+
+// 修改密碼
+export const changePasswordAction = createAsyncThunk('users/changePasswordAction',async(payload:ChangPw)=>{
+    const ret = await http.post('/users/changepw',payload)
     return ret
 })
 
@@ -45,6 +68,7 @@ const userSlice = createSlice({
         },
         clearToken(state){
                state.token=''
+               state.infos={}
         }
     }
 })

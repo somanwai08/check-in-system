@@ -1,8 +1,8 @@
 import React, { useState,useEffect } from 'react'
 import styles from './Sign.module.scss'
-import { Descriptions,Button,Tag,Calendar ,Row, Select,Space, message} from 'antd';
+import { Descriptions,Button,Calendar,Row, Select,Space, message,Card} from 'antd';
 import type { DescriptionsProps } from 'antd';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store-index';
 import { useAppDispatch } from '../../store/store-index';
@@ -11,6 +11,13 @@ import { getTimeAction,updateInfo , putTimeAction } from '../../store/module/sig
 import type { Info } from '../../store/module/sign';
 import type { Dayjs } from 'dayjs';
 import { toZero } from '../../utils/common';
+
+// import MobileDetect from 'mobile-detect';
+
+// const md=new MobileDetect(window.navigator.userAgent)
+
+// console.log(md.mobile(),'isMobile')
+
 
 const date = new Date()
 
@@ -23,10 +30,7 @@ enum DetailKey {
   lateAndEarly = '迟到并早退'
 }
 
-const originDetailState = {
-  type:'success' as 'success'|'error',
-  text:'Normal' as 'Normal'|'Abnormal'
-}
+
 
 const originDetailValue:Record<keyof typeof DetailKey,number> = {
   normal:0,
@@ -39,17 +43,20 @@ const originDetailValue:Record<keyof typeof DetailKey,number> = {
 
 
 export default function Sign() {
-       const [month,setMonth] = useState(date.getMonth())
+       const [month,setMonth] = useState(date.getMonth()+1)
        const [year,setYear] = useState(date.getFullYear())
        const monthOptions = ['January','February','March','April','May','June','July','August','September','October','November','December']
-       
-       const navigate = useNavigate()
-
+      //  console.log(month,'month')
        const signsInfos = useSelector((state:RootState)=>state.sign.infos)
+       const [dailyCheckIn,setDailyCheckIn]= useState<string|null[]>()
+      //  (((signsInfos.time as {[index:string]:unknown})[year] as {[index:string]:unknown})[toZero(month)] as {[index:string]:unknown})[toZero(date.getDate())] as string|null[]
+
        const usersInfos = useSelector((state:RootState)=>state.user.infos)
        const dispatch = useAppDispatch()
        const [detailValue,setDetailValue] = useState({...originDetailValue})
-       const [detailState,setDetailState] = useState({...originDetailState})
+       
+      //  console.log(dailyCheckIn,'dailychein')
+
 
             // 用來獲得用戶簽名數據的副作用
        useEffect(()=>{
@@ -61,12 +68,15 @@ export default function Sign() {
                    const {errcode,infos}=(action1.payload as {[index:string]:unknown}).data as {[index:string]:unknown}
                     if(errcode===0){
                          dispatch(updateInfo(infos as Info))
+                         const monthlyCheckIn = ((((((infos as {[index:string]:unknown}).time)as {[index:string]:unknown})[year])as {[index:string]:unknown})[toZero(month)] as{[index:string]:string|null[]})[toZero(date.getDate())]
+                         setDailyCheckIn(monthlyCheckIn)
+                         
                     }
                 })
         }
       
 
-       },[signsInfos,dispatch,usersInfos])
+       },[signsInfos,dispatch,usersInfos,month,year])
 
        useEffect(()=>{
                           const year = new Date().getFullYear()
@@ -108,11 +118,18 @@ export default function Sign() {
                     }
                 }
 
-       },[month,signsInfos.detail])
-   
-       const handleManage=()=>{
-        navigate(`/exception?year=${year}&month=${month}`)
-       }
+       },[month,signsInfos.detail,year])
+
+      useEffect(()=>{
+        // console.log(dailyCheckIn,'console dailyCheckin')
+        if(dailyCheckIn===undefined&&signsInfos.time){
+            // console.log(signsInfos,'def')
+          // console.log((((signsInfos.time as {[index:string]:unknown})[year] as {[index:string]:unknown})[toZero(month)] as {[index:string]:unknown})[toZero(date.getDate())] as string|null[],'abc')
+          setDailyCheckIn((((signsInfos.time as {[index:string]:unknown})[year] as {[index:string]:unknown})[toZero(month)] as {[index:string]:unknown})[toZero(date.getDate())] as string|null[])
+        }
+        
+      },[dailyCheckIn])
+      
        const handleCellRender=(value:Dayjs)=>{
                   
                   const year = value.year()
@@ -123,86 +140,86 @@ export default function Sign() {
             //  獲取每一格所在的日期的值（打卡時間）
              const date = month && (month as {[index:string]:unknown})[toZero(value.date())]
 
-             let ret = ''
+
+             let ret:React.ReactElement = <div></div>
              if(Array.isArray(date)){
-                      ret = date.join('-')
+                  if(date.length===1){
+                    ret=<div>start:{date[0]}</div>
+                  }else if(date.length===2){
+                    ret=<div>
+                      <div>start:{date[0]}</div>
+                      <div>break:</div>
+                      <div>{date[1]}-{date[2]}</div>
+                         </div> 
+                  }else if(date.length===3){
+                    ret=<div>
+                      <div>start:{date[0]}</div>
+                         <div>break:</div>
+                         <div>{date[1]}-{date[2]}</div>
+                         </div> 
+                  }else if(date.length===4){
+                    ret=<div>
+                         <div>start:{date[0]}</div>
+                         <div>break:</div>
+                         <div>`{date[1]}-{date[2]}`</div>
+                         <div>off:{date[3]}</div>
+                         </div> 
+                  }
+                      
              }
              return <div>{ret}</div>
        }
-
+       
        const handlePutTime=()=>{
-               navigator.geolocation.getCurrentPosition((position)=>{
-                const latitude = position.coords.latitude
-                const longitude = position.coords.longitude
+      
+        navigator.geolocation.getCurrentPosition((position)=>{
 
-                console.log('緯度'+latitude)
-                console.log('經度'+longitude)
+          const latitude = position.coords.latitude
+          const longitude = position.coords.longitude
 
-                if(latitude>=22.28034&&latitude<=22.28133&&longitude>=114.15637&&longitude<=114.15733){
-                  dispatch(putTimeAction({userid:usersInfos._id as string})).then(action=>{
-                    console.log(action.payload,'action.payload in sign.tsx putTimeAction')
-                    const {errcode,infos}=(action.payload as {[index:string]:unknown}).data as {[index:string]:unknown}
-                    if(errcode===0){
-                      dispatch(updateInfo(infos as Info))
-                      message.success('successful')
-                    }
-                    
-                  })
-                }else{
-                  message.error('打卡失敗')
+          if(latitude>=22.2810102&&latitude<=22.2822682&&longitude>=114.1571273&&longitude<=114.1584973){
+            // if條件：假如在中環店
+            dispatch(putTimeAction({userid:usersInfos._id as string})).then(action=>{
+              const {errcode,infos}=(action.payload as {[index:string]:unknown}).data as {[index:string]:unknown}
+              if(errcode===0){
+                dispatch(updateInfo(infos as Info))
+                message.success(`successful latitude:${latitude} longitude:${longitude}`)
+                const monthlyCheckIn = ((((((infos as {[index:string]:unknown}).time)as {[index:string]:unknown})[year])as {[index:string]:unknown})[toZero(month)] as{[index:string]:string|null[]})[toZero(date.getDate())] 
+                setDailyCheckIn(monthlyCheckIn)
+              }
+              
+            })
+          }else if(latitude>=22.3035091&&latitude<=22.3047671&&longitude>=114.1602596&&longitude<=114.1616296){
+               // if條件：假如在element店
+               dispatch(putTimeAction({userid:usersInfos._id as string})).then(action=>{
+                const {errcode,infos}=(action.payload as {[index:string]:unknown}).data as {[index:string]:unknown}
+                if(errcode===0){
+                  dispatch(updateInfo(infos as Info))
+                  message.success(`successful latitude:${latitude} longitude:${longitude}`)
+                  const monthlyCheckIn = ((((((infos as {[index:string]:unknown}).time)as {[index:string]:unknown})[year])as {[index:string]:unknown})[toZero(month)] as{[index:string]:string|null[]})[toZero(date.getDate())]
+                  setDailyCheckIn(monthlyCheckIn)
                 }
-
-               })
-
-              
-              
+                
+              })
+          }else{
+            message.error(`unsuccessful! latitude:${latitude} longitude:${longitude}`)
+          }
+        },(err)=>{
+          alert(err.message)
+        })
+          
        }
 
   const items: DescriptionsProps['items'] = [
     {
       key: '1',
       label: 'Month',
-      children: monthOptions[month],
+      children: monthOptions[month-1],
     },
     {
       key: '2',
-      label: 'normal',
-      children: detailValue.normal,
-    },
-    {
-      key: '3',
-      label: 'absent',
-      children: detailValue.absent,
-    },
-    {
-      key: '4',
       label: 'miss',
-      children: detailValue.miss,
-    },
-    {
-      key: '5',
-      label: 'late',
-      children: detailValue.late,
-    },
-    {
-      key: '6',
-      label: 'early',
-      children: detailValue.early,
-    },
-    {
-      key: '7',
-      label: 'late and early',
-      children: detailValue.lateAndEarly,
-    },
-    {
-      key: '8',
-      label: 'Manage',
-      children: <Button onClick={handleManage}>Details</Button>,
-    },
-    {
-      key: '9',
-      label: 'Status',
-      children: <Tag color={detailState.type}>{detailState.type}</Tag>,
+      children:<span style={{color:detailValue.miss>1?'red':'black'}}>{detailValue.miss}</span> ,
     },
   ];
 
@@ -211,7 +228,8 @@ export default function Sign() {
   return (
     <div className={styles['sign-home']}>
       <Descriptions  items={items} bordered={true} column={{xs:1,sm:3,md:4,lg:5,xl:6,xxl:9}} layout="vertical"/>
-      <Calendar  cellRender={handleCellRender}  headerRender={({value,type,onChange,onTypeChange})=>{
+
+<Calendar className={styles['sign-desktopSignInfo']} cellRender={handleCellRender}  headerRender={({value,type,onChange,onTypeChange})=>{
               const monthOptions1 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
               
          const monthOptions2 = monthOptions1.map(item=><Select.Option key={item} value={item}>{item}</Select.Option>)
@@ -220,7 +238,7 @@ export default function Sign() {
         
         return (
         <Row className={styles['sign-calendarHeader']} justify='space-between' align='middle'>
-             <Button type='primary' onClick={handlePutTime}>在線簽到</Button>
+             <Button type='primary' onClick={handlePutTime}>check in</Button>
              <Space>
               {/* 年份dropdown */}
               <Select className={styles['sign-yearDropDown']} value={value.year()} onChange={(e)=>{
@@ -249,6 +267,19 @@ export default function Sign() {
         </Row>
         )
       }}></Calendar>
+      <Row className={styles['sign-mobileSignInfo']} justify='space-between' align='middle'>
+        <Button type='primary' onClick={handlePutTime}>Check in3</Button>
+        <Card title="Check-in Data"  style={{ width: '100%',marginTop:'20px'}}>
+      {/* <p>Start:${((signsInfos as {[index:string]:unknown})[year] as {[index:string]:{[index:string]:string[]}})[month][date.getDay()][0]}</p> */}
+      <p>Date:{`${date.getDate()}-${month}-${year}`}</p>
+      {/* <p>{year-month}</p> */}
+      <p>Start:{dailyCheckIn?dailyCheckIn[0]:''}</p>
+      <p>Break: {dailyCheckIn?dailyCheckIn[1]:''}-{dailyCheckIn?dailyCheckIn[2]:''}</p>
+      <p>Off: {dailyCheckIn?dailyCheckIn[3]:''}</p>
+    </Card>
+
+      </Row> 
+
     </div>
   )
 }

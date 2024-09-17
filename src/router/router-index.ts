@@ -6,7 +6,8 @@ import {
     CalculatorOutlined,
     WarningOutlined,
     FileAddOutlined,
-    ScheduleOutlined
+    ScheduleOutlined,
+    CalendarOutlined
 } from '@ant-design/icons'
 import BeforeEach from '../components/beforeEach/BeforeEach';
 
@@ -16,6 +17,10 @@ const Exception = lazy (()=>import('../views/Exception/Exception'))
 const Apply = lazy (()=>import('../views/Apply/Apply'))
 const Check = lazy (()=>import('../views/Check/Check'))
 const Login = lazy (()=>import('../views/Login/Login'))
+const Attendance = lazy(()=>import('../views/AttenList/AttenList'))
+const Modify = lazy(()=>import('../views/Modify/Modify'))
+const Register = lazy(()=>import('../views/Register/Register'))
+const ModifyPW = lazy(()=>import('../views/ModifyPW/ModifyPW'))
 
 declare module 'react-router'{
    export interface NonIndexRouteObject{
@@ -42,16 +47,16 @@ declare module 'react-router'{
 
 export const routes:RouteObject[]=[
     {
-        path:'/',
-        element:React.createElement(Navigate,{to:'/sign'})
+        path:'/check-in-system',
+        element:React.createElement(Navigate,{to:'/check-in-system/login'})
     },
     {
-        path:'/',
+        path:'/check-in-system',
         name:'home',
         element:React.createElement(BeforeEach,null,React.createElement(Home)),
         meta:{
             menu:true,
-            title:"考勤管理",
+            title:"Menu",
             icon:React.createElement(CopyOutlined),
             auth:true
         },
@@ -62,18 +67,18 @@ export const routes:RouteObject[]=[
                 element:React.createElement(Sign),
                 meta:{
                     menu:true,
-                    title:"在線打卡簽到",
+                    title:"Check-in",
                     icon:React.createElement(CalculatorOutlined),
                     auth:true
                 },
             },
             {
-                path:'exception',
-                name:'exception',
-                element:React.createElement(Exception),
+                path:'changepw',
+                name:'changepw',
+                element:React.createElement(ModifyPW),
                 meta:{
-                    menu:true,
-                    title:"異常考勤查詢",
+                    menu:false,
+                    title:"Change Password",
                     icon:React.createElement(WarningOutlined),
                     auth:true
                 },
@@ -84,7 +89,7 @@ export const routes:RouteObject[]=[
                 element:React.createElement(Apply),
                 meta:{
                     menu:true,
-                    title:"添加考勤審批",
+                    title:'Leave Application',
                     icon:React.createElement(FileAddOutlined),
                     auth:true
                 },
@@ -95,8 +100,30 @@ export const routes:RouteObject[]=[
                 element:React.createElement(Check),
                 meta:{
                     menu:true,
-                    title:"我的考勤審批",
+                    title:"Leave Approve",
                     icon:React.createElement(ScheduleOutlined),
+                    auth:true
+                },
+            },
+            {
+                path:'attendance',
+                name:'attendance',
+                element:React.createElement(Attendance),
+                meta:{
+                    menu:true,
+                    title:"Timesheet",
+                    icon:React.createElement(CalendarOutlined),
+                    auth:true
+                },
+            },
+            {
+                path:'modify',
+                name:'modify',
+                element:React.createElement(Modify),
+                meta:{
+                    menu:true,
+                    title:"Check-in Modification",
+                    icon:React.createElement(CalendarOutlined),
                     auth:true
                 },
             },
@@ -104,9 +131,13 @@ export const routes:RouteObject[]=[
         ]
     },
     {
-        path:'/login',
+        path:'/check-in-system/login',
         element:React.createElement(BeforeEach,null,React.createElement(Login))
-    }
+    },
+    // {
+    //     path:'check-in-system/register',
+    //     element:React.createElement(BeforeEach,null,React.createElement(Register))
+    // }
 ]
 
 const router = createBrowserRouter(routes)

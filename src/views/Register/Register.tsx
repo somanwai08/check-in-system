@@ -1,47 +1,42 @@
-import React, { useEffect } from 'react'
-import styles from './Login.module.scss'
+import React from 'react'
+import styles from './Register.module.scss'
 import type { FormProps } from 'antd';
 import { Button, Form, Input,Row,Col, message } from 'antd';
-import {loginAction, updateInfo, updateToken} from '../../store/module/users'
+import {registerAction} from '../../store/module/users'
 import { useAppDispatch } from '../../store/store-index';
 import { useNavigate } from 'react-router-dom';
 import {  useSelector } from 'react-redux';
 import { RootState } from '../../store/store-index';
-import { clearToken } from '../../store/module/users';
-
 
 
 type FieldType = {
   email: string;
   pass: string;
+  name:string
 };
 
 
-export default function Login() {
-         const token = useSelector((state:RootState)=>state.user.token)
+export default function Register() {
+        //  const token = useSelector((state:RootState)=>state.user.token)
          const dispatch = useAppDispatch()      
          const navigate = useNavigate()
 
- useEffect(()=>{
-      //  只要進入這個頁面，就要清空本來的信息
-      dispatch(clearToken())
- },[])
+  // const handleLogin = () =>{
+  //       dispatch(loginAction({email:'huangrong@imooc.com',pass:'huangrong'}))
+  // }
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
     console.log('Success:', values);
-    
-     dispatch(loginAction(values)).then(action=>{
-           console.log(action,'action in login')
+     dispatch(registerAction(values)).then(action=>{
             const {errcode,token,errmsg} = (action.payload as {[index:string]:unknown}).data as {[index:string]:unknown}
             
-            if (errcode === 0 && typeof token === 'string'){
-              dispatch(updateToken(token))
-              message.success('登錄成功')
-              navigate('/check-in-system/sign')
+            if (errcode === 0 ){
+              message.success('註冊成功')
+              navigate('/login')
              }
              else{
               console.log(errcode,'errcode')
-              message.error('登錄失敗')
+              message.error('註冊失敗')
              }
              
      })
@@ -50,18 +45,19 @@ export default function Login() {
   
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
     console.log('Failed:', errorInfo);
+    message.error('Register failed! Please check the register information')
   };
 
-  // const handleRegister=()=>{
-  //         navigate('/check-in-system/register')
-  // }
+  const handleSignIn = ()=>{
+       navigate('/check-in-system/login')
+  }
 
   
      
   return (
     <div className={styles.login}>
       <div className={styles.header}>
-      <span className={styles['header-title']}  >Sauvereign Check-in System</span>
+      <span className={styles['header-title']}  >Sign up for Sauvereign Check-in System</span>
     </div>
     <Row >
    <Col xs={{span:16,offset:4}} sm={{span:8,offset:8}} md={{span:8,offset:8}} lg={{span:8,offset:8}} xl={{span:8,offset:8}} xxl={{span:8,offset:8}}>
@@ -73,13 +69,17 @@ export default function Login() {
     initialValues={{ remember: true }}
     onFinish={onFinish}
     onFinishFailed={onFinishFailed}
-    autoComplete="on"
+    autoComplete="off"
     className={styles.main}
   >
     <Form.Item<FieldType>
       label="Email"
       name="email"
-      rules={[{ required: true, message: 'Please input your email!' }]}
+      rules={[
+        { required: true, message: 'Please input your email!' },
+        { type: 'email', message:"The input is not a valid Email"}
+      ]}
+      
     >
       <Input />
     </Form.Item>
@@ -91,13 +91,24 @@ export default function Login() {
     >
       <Input.Password />
     </Form.Item>
+    <Form.Item<FieldType>
+      label="username"
+      name="name"
+      rules={[{ required: true, message: 'Please input your username!' }]}
+    >
+      <Input />
+    </Form.Item>
 
     <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
       <Button type="primary" htmlType="submit">
         Submit
       </Button>
     </Form.Item>
-   
+    <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+      <Button type="primary" onClick={handleSignIn}>
+        Sign in
+      </Button>
+    </Form.Item>
   </Form>
    </Col>
     </Row>

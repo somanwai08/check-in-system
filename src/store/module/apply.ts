@@ -9,7 +9,9 @@ export type Info = Array<{
 
 // 用戶狀態的數據類型
 export type ApplysState = {
-    infos:Info
+    // infos:Info
+    applyList:Info;
+    checkList:Info
 }
 
 type Userid = {
@@ -24,7 +26,7 @@ type applyInfo = {
 // 更新用戶信息的數據類型
 type putApply =     {
    _id:string,
-   state:'已通过'|'未通过'
+   state:'Approved'|'Rejected'
 }
 
 // 獲取用戶審批信息
@@ -48,17 +50,24 @@ export const updateApplyAction = createAsyncThunk('checks/updateApplyAction',asy
 
 
 const applySlice = createSlice({
-                        name:'checks',
+                        name:'apply',
                         initialState:{
-                            infos:[]
-                        }as ApplysState,
+                            // infos:[]
+                            applyList:[] as Info,
+                            checkList:[] as Info
+                        },
                         reducers:{
-                            // 更新用戶審批信息
+                            // 更新用戶申請假期信息
                             updateApplyInfo(state,action:PayloadAction<Info>){
-                                        state.infos = action.payload
+                                // console.log(action.payload,'action.payload')
+                                        state.applyList = action.payload
+                            },
+                            // 更新主管需要批核的信息
+                            updateCheckInfo(state,action:PayloadAction<Info>){
+                                 state.checkList=action.payload
                             }
                         }
 })
 
-export const {updateApplyInfo} = applySlice.actions
+export const {updateApplyInfo,updateCheckInfo} = applySlice.actions
 export default applySlice.reducer

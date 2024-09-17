@@ -2,10 +2,25 @@
     padding: 10px;
 }
 
-.sign-calendarHeader{
+.sign-mobileSignInfo{
     margin: 20px;
+    @media (min-width:576px) {
+        display: none;
+    }
 }
 
-.sign-yearDropDown{
-    width:80px
+.sign-desktopSignInfo{
+    @media (max-width:575px) {
+        display: none;
+    }
+
+    .sign-yearDropDown{
+        width:80px
+    }
+    
+    .ant-picker-calendar{
+        font-size: 11px;
+    }
+
 }
+

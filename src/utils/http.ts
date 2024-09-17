@@ -5,8 +5,8 @@ import { message } from 'antd';
 import { clearToken } from '../store/module/users';
 
 const instance = axios.create({
-    baseURL:'http://localhost:3000',
-    // baseURL:'http://api.h5ke.top/',
+   
+    // baseURL:'http://localhost:3000',
     timeout:5000
 })
 
@@ -30,7 +30,7 @@ instance.interceptors.response.use(function (response) {
       message.error('token error')
       store.dispatch(clearToken())
       setTimeout(()=>{
-        window.location.replace('/login')
+        window.location.replace('/check-in-system/login')
       },1000)
     }
     return response;
